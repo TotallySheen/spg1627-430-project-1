@@ -1,0 +1,88 @@
+<html>
+  <head>
+    <title>Joke Client</title>
+    <link href="/default-styles.css" type="text/css" rel="stylesheet" />
+    <style>
+      header{
+        background-color:lightblue;
+        color: red;
+        font-size:2em;
+        padding:1em;
+      }
+
+      h1{
+        font-family:Georgia, 'Times New Roman', Times, serif;
+      }
+      
+      section{
+        border-bottom:1px dashed gray;
+      }
+    </style>
+    <script>
+      const handleResponse = (e) => {
+          const obj = JSON.parse(e.target.response);
+
+          const output = `
+          <img src="${obj.url}" alt="${obj.name}" id="guessPic" width="500" height="500">
+          <p class="output">Name this picture!</p>
+          <p class="output">(for now check the alt text on the image, dynamic image linking didn't work out)</p>
+          <p class="output"><input type="text" id="picName"></p>
+          <p class="output"><button id="btnSubmit">SUBMIT</button></p>
+          <p class="output" id="statusBox">Awaiting guess...</p>`;
+
+          outputContainer.innerHTML = output;
+          document.querySelector("#btnSubmit").addEventListener("click", makeGuess);
+      }
+      
+      const downloadImage = (e) => {
+        // remember that an `Event` object gets passed along every time that an event handler or listener calls a function
+        // the `target` property of that event points at the element that sent the event, in this case a button
+        console.log(`An element of id=${e.target.id} was clicked!`);
+
+        const URL = '/random-image';
+        const xhr = new XMLHttpRequest();
+        xhr.onload = handleResponse;
+        xhr.open("GET",URL);
+
+        xhr.setRequestHeader('Accept',"application/javascript");
+        xhr.send();
+      }
+      
+      const makeGuess = (e) => {
+        if (picName.value === guessPic.alt){
+          statusBox.innerHTML = "Correct!";
+        }
+        else{
+          statusBox.innerHTML = "Wrong :(";
+        }
+      }
+      
+      const init = () => {
+         // An Event *Handler*
+        // document.querySelector("#btnJoke").onclick = downloadJoke; // same as below, less typing, use which ever version you prefer
+      
+        // An Event *Listener*
+        document.querySelector("#btnGuess").addEventListener("click", downloadImage);
+        //document.querySelector("#btnMake").addEventListener("click", downloadJokes);
+        // **Actually, event handlers and listeners are NOT exactly the same in all use cases - what ARE the differences?**
+      }
+      
+      window.onload = init;
+     
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>Infinite Pictionary</h1>
+    </header>
+    
+    <section>
+      <p><button id="btnGuess">GUESS</button></p>
+      <p><button id="btnMake">MAKE</button> WIP</p>
+      <div id="outputContainer">
+        
+      </div>
+    </section>
+    
+  </body>
+</html>

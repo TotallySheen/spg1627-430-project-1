@@ -1,30 +1,21 @@
-const underscore = require('underscore');
+// const underscore = require('underscore');
 
-const jokes = [
-  { q: 'What do you call a very small valentine?', a: 'A valen-tiny!' },
-  { q: 'What did the dog say when he rubbed his tail on the sandpaper?', a: 'Ruff, Ruff!' },
-  { q: "Why don't sharks like to eat clowns?", a: 'Because they taste funny!' },
-  { q: 'What did the boy cat say to the girl cat?', a: "You're Purr-fect!" },
-  { q: "What is a frog's favorite outdoor sport?", a: 'Fly Fishing!' },
-  { q: 'I hate jokes about German sausages.', a: 'Theyre the wurst.' },
-  { q: 'Did you hear about the cheese factory that exploded in France?', a: 'There was nothing left but de Brie.' },
-  { q: 'Our wedding was so beautiful ', a: 'Even the cake was in tiers.' },
-  { q: 'Is this pool safe for diving?', a: 'It deep ends.' },
-  { q: 'Dad, can you put my shoes on?', a: 'I dont think theyll fit me.' },
-  { q: 'Can February March?', a: 'No, but April May' },
-  { q: 'What lies at the bottom of the ocean and twitches?', a: 'A nervous wreck.' },
-  { q: 'Im reading a book on the history of glue.', a: 'I just cant seem to put it down.' },
-  { q: 'Dad, can you put the cat out?', a: 'I didnt know it was on fire.' },
-  { q: 'What did the ocean say to the sailboat?', a: 'Nothing, it just waved.' },
-  { q: 'What do you get when you cross a snowman with a vampire?', a: 'Frostbite' },
+const images = [
+  { url: '/pics/bird', name: 'bird' },
+  { url: '/pics/car', name: 'car' },
+  { url: '/pics/rabbit', name: 'rabbit' },
+  { url: '/pics/television', name: 'television' },
+  { url: '/pics/watch', name: 'watch' },
 ];
 
-const getJoke = () => {
-  const num = Math.floor(Math.random() * 16);
-  return JSON.stringify(jokes[num]);
+const getImage = () => {
+  const num = Math.floor(Math.random() * 5);
+  return JSON.stringify(images[num]);
 };
 
-const getJokes = (limit) => {
+const getImages = (limit) => {
+  console.log(limit);
+  /*
   let num;
   if (!limit) num = 1;
   else num = limit;
@@ -41,9 +32,11 @@ const getJokes = (limit) => {
   }
 
   return JSON.stringify(output);
+  */
 };
 
-const getJokeXML = () => {
+const getImageXML = () => {
+  /*
   const num = Math.floor(Math.random() * 16);
   const responseXML = `
       <joke>
@@ -52,9 +45,12 @@ const getJokeXML = () => {
       </joke>
     `;
   return responseXML;
+  */
 };
 
-const getJokesXML = (limit) => {
+const getImagesXML = (limit) => {
+  console.log(limit);
+  /*
   let num;
   if (!limit) num = 1;
   else num = limit;
@@ -74,48 +70,49 @@ const getJokesXML = (limit) => {
   }
   responseXML += '</jokes>';
   return responseXML;
+  */
 };
 
 const getBinarySize = (string) => Buffer.byteLength(string, 'utf8');
 
-const getRandomJokeResponse = (request, response, params, acceptedTypes, httpMethod) => {
+const getRandomImageResponse = (request, response, params, acceptedTypes, httpMethod) => {
   if (acceptedTypes.includes('text/xml')) {
     if (httpMethod === 'GET') {
       response.writeHead(200, { 'Content-Type': 'text/xml' });
-      response.write(getJokeXML());
+      response.write(getImageXML());
     } else if (httpMethod === 'HEAD') {
-      const size = getBinarySize(getJokeXML());
+      const size = getBinarySize(getImageXML());
       response.writeHead(200, { 'Content-Type': 'text/xml', 'Content-Length': size });
     }
     response.end();
   } else {
     if (httpMethod === 'GET') {
       response.writeHead(200, { 'Content-Type': 'application/json' });
-      response.write(getJoke());
+      response.write(getImage());
     } else if (httpMethod === 'HEAD') {
-      const size = getBinarySize(getJoke());
+      const size = getBinarySize(getImage());
       response.writeHead(200, { 'Content-Type': 'application/json', 'Content-Length': size });
     }
     response.end();
   }
 };
 
-const getRandomJokesResponse = (request, response, params, acceptedTypes, httpMethod) => {
+const getRandomImagesResponse = (request, response, params, acceptedTypes, httpMethod) => {
   if (acceptedTypes.includes('text/xml')) {
     if (httpMethod === 'GET') {
       response.writeHead(200, { 'Content-Type': 'text/xml' });
-      response.write(getJokesXML(params.limit));
+      response.write(getImagesXML(params.limit));
     } else if (httpMethod === 'HEAD') {
-      const size = getBinarySize(getJokesXML(params.limit));
+      const size = getBinarySize(getImagesXML(params.limit));
       response.writeHead(200, { 'Content-Type': 'text/xml', 'Content-Length': size });
     }
     response.end();
   } else {
     if (httpMethod === 'GET') {
       response.writeHead(200, { 'Content-Type': 'application/json' });
-      response.write(getJokes(params.limit));
+      response.write(getImages(params.limit));
     } else if (httpMethod === 'HEAD') {
-      const size = getBinarySize(getJokes(params.limit));
+      const size = getBinarySize(getImages(params.limit));
       response.writeHead(200, { 'Content-Type': 'application/json', 'Content-Length': size });
     }
     response.end();
@@ -123,6 +120,6 @@ const getRandomJokesResponse = (request, response, params, acceptedTypes, httpMe
 };
 
 module.exports = {
-  getRandomJokeResponse,
-  getRandomJokesResponse,
+  getRandomImageResponse,
+  getRandomImagesResponse,
 };

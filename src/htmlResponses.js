@@ -1,13 +1,13 @@
 // 5 - here's our 404 page
 const fs = require('fs');
 
-const jokeClient = fs.readFileSync(`${__dirname}/../client/joke-client.html`);
+const mainClient = fs.readFileSync(`${__dirname}/../client/main-client.html`);
 const error = fs.readFileSync(`${__dirname}/../client/error.html`);
 const style = fs.readFileSync(`${__dirname}/../client/default-styles.css`);
 
-const getJokeClientResponse = (request, response) => {
+const getMainClientResponse = (request, response) => {
   response.writeHead(200, { 'Content-Type': 'text/html' });
-  response.write(jokeClient);
+  response.write(mainClient);
   response.end();
 };
 
@@ -24,7 +24,7 @@ const getStyles = (request, response) => {
 };
 
 module.exports = {
-  getJokeClientResponse,
+  getMainClientResponse,
   get404Response,
   getStyles,
 };

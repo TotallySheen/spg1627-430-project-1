@@ -3,11 +3,12 @@ const url = require('url');
 const query = require('querystring');
 const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
+const imgHandler = require('./imgResponses.js');
 
 const urlStruct = {
-  '/random-joke': jsonHandler.getRandomJokeResponse,
-  '/random-jokes': jsonHandler.getRandomJokesResponse,
-  '/joke-client': htmlHandler.getJokeClientResponse,
+  '/': htmlHandler.getMainClientResponse,
+  '/random-image': jsonHandler.getRandomImageResponse,
+  '/random-images': jsonHandler.getRandomImagesResponse,
   '/default-styles.css': htmlHandler.getStyles,
   notFound: htmlHandler.get404Response,
 };
@@ -26,7 +27,9 @@ const onRequest = (request, response) => {
   const { pathname } = parsedUrl;
   const params = query.parse(parsedUrl.query);
 
-  if (urlStruct[pathname]) {
+  if (pathname.includes('/pics/')) {
+    imgHandler.getImgByName(request, response, pathname.split('/pics/')[1]);
+  } else if (urlStruct[pathname]) {
     urlStruct[pathname](request, response, params, acceptedTypes, request.method);
   } else {
     urlStruct.notFound(request, response);
