@@ -7,6 +7,7 @@ const imgHandler = require('./imgResponses.js');
 
 const urlStruct = {
   '/': htmlHandler.getMainClientResponse,
+  '/make':htmlHandler.getMakeClientResponse,
   '/random-image': jsonHandler.getRandomImageResponse,
   '/random-images': jsonHandler.getRandomImagesResponse,
   '/default-styles.css': htmlHandler.getStyles,
