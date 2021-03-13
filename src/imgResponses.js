@@ -10,11 +10,9 @@ const images = {
 
 const getImgByName = (request, response, name) => {
   response.writeHead(200, { 'Content-Type': 'image/png' });
-  // I've been having issues calling the image by key name, so 
+  // I've been having issues calling the image by key name, so
   // ive temporarily pointed it exclusively to the bird picture
-  // response.write(images.name)
-  console.log(name);
-  response.write(images.bird);
+  response.write(images[name]);
   response.end();
 };
 

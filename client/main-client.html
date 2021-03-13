@@ -3,22 +3,6 @@
     <title>Infinite Pictionary</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <link href="/default-styles.css" type="text/css" rel="stylesheet" />
-    <style>
-      header{
-        background-color:lightblue;
-        color: red;
-        font-size:2em;
-        padding:1em;
-      }
-
-      h1{
-        font-family:Georgia, 'Times New Roman', Times, serif;
-      }
-      
-      section{
-        border-bottom:1px dashed gray;
-      }
-    </style>
     <script>
       const handleResponse = (e) => {
           const obj = JSON.parse(e.target.response);
@@ -26,7 +10,6 @@
           const output = `
           <img src="${obj.url}" alt="${obj.name}" id="guessPic" width="500" height="500">
           <p class="output">Name this picture!</p>
-          <p class="output">(for now check the alt text on the image, dynamic image linking didn't work out)</p>
           <p class="output"><input type="text" id="picName"></p>
           <p class="output"><button id="btnSubmit">SUBMIT</button></p>
           <p class="output" id="statusBox">Awaiting guess...</p>`;
@@ -47,10 +30,6 @@
 
         xhr.setRequestHeader('Accept',"application/javascript");
         xhr.send();
-      }
-
-      const getMakePage = (e) => {
-
       }
       
       const makeGuess = (e) => {

@@ -4,63 +4,13 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
         <link href="/default-styles.css" type="text/css" rel="stylesheet" />
         <style>
-            header{
-              background-color:lightblue;
-              color: red;
-              font-size:2em;
-              padding:1em;
-            }
-      
-            h1{
-              font-family:Georgia, 'Times New Roman', Times, serif;
-            }
-
-            h2{
-                text-align: center;
-            }
             
-            section{
-              border-bottom:1px dashed gray;
-            }
-            
-            canvas{
-                border: 2px solid black;
-                display: block;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .block{
-                text-align: center;
-                display: block;
-                margin-top:1em;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .fail{
-                color:red;
-            }
           </style>
           <script>
             let ctx,canvas;
             let canvasWidth = 800;
             let canvasHeight = 600;
             
-            const submitImage = (e) => {
-                document.querySelector("#status").innerHTML = "<p>Processing...</p>";
-                
-                // checking if a name exists
-                let name = document.querySelector("#drawingName").value.toLowerCase();
-                console.log(name);
-                if (name === ""){
-                    document.querySelector("#status").innerHTML = "<p class='fail'>ERROR: Please enter a name</p>";
-                    return;
-                }
-                
-            }
-
-
             // Credit for canvas drawing code
             // https://stackoverflow.com/questions/2368784/draw-on-html5-canvas-using-a-mouse
             
@@ -101,21 +51,57 @@
                 ctx.clearRect(0,0,canvasWidth,canvasHeight);
             }
 
+            const saveImage = (e, picForm) => {
+                e.preventDefault();
+                
+                document.querySelector("#status").innerHTML = "<p>Processing...</p>";
+                
+                // checking if a name exists
+                const name = document.querySelector("#drawingName").value.toLowerCase().replace(/\s/g,'-');
+                if (name === ""){
+                    document.querySelector("#status").innerHTML = "<p class='fail'>ERROR: Please enter a name</p>";
+                    return;
+                }
+                // uploading the image to the server with the specified name
+                // Credit to https://stackoverflow.com/questions/51347676/xhr-sendparams-multiple-parameters for some ideas for this
+                const canvas = document.querySelector("canvas");
+                const image = canvas.toDataURL("image/png");
+                const params = `imgBase64=${image}&imgName=${name}`;
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "client/upload.php");
+                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhr.onload = () => {
+                    const url = this.responseText;
+                    sendPost(name, url);
+                } 
+                xhr.send(params);
+            }
+
+            const sendPost = (name, url) => {
+                console.log("do stuff");
+            }
+
             const init = () => {
                 // canvas stuff
                 canvas = document.querySelector('canvas');
 
                 ctx = canvas.getContext('2d');
                 
-                document.querySelector("#btnSubmit").addEventListener("click",submitImage);
                 document.querySelector('#btnClear').addEventListener("click",clear);
 
                 document.addEventListener('mousemove', draw);
                 document.addEventListener('mousedown', setPosition);
                 document.addEventListener('mouseenter', setPosition);
+
+                const pictureForm = document.querySelector("#pictureForm");
+
+                const addImage = (e) => saveImage(e, pictureForm);
+
+                pictureForm.addEventListener('submit', addImage);
             }
 
             window.onload = init;
+            
           </script>
     </head>
     <body>
@@ -126,15 +112,15 @@
         <section>
             <h2>Click to Draw!</h2>
             <canvas width="800" height="600" id="drawing"></canvas>
-            <div class="block" id="canvasControls">
-                <button id="btnClear">CLEAR</button>
-            </div>
-            <div class="block">
+            <button class="block" id="btnClear">CLEAR</button>
+            
+            <form id="pictureForm" action="/add-pic" method="POST">
                 <label for="drawingName">Image Name: </label>
                 <input type="text" name="drawingName" id="drawingName">
-            </div>
-            <button class="block" id="btnSubmit">SUBMIT</button>
-
+                <input type="text" style="display: none;" name="imageURL" id="imageURL">
+                <input class="block" id="btnSubmit" type="submit" value="SUBMIT">
+            </form>
+            
             <div id="status" class="block">
 
             </div>

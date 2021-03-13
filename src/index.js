@@ -7,7 +7,7 @@ const imgHandler = require('./imgResponses.js');
 
 const urlStruct = {
   '/': htmlHandler.getMainClientResponse,
-  '/make':htmlHandler.getMakeClientResponse,
+  '/make': htmlHandler.getMakeClientResponse,
   '/random-image': jsonHandler.getRandomImageResponse,
   '/random-images': jsonHandler.getRandomImagesResponse,
   '/default-styles.css': htmlHandler.getStyles,
@@ -16,6 +16,27 @@ const urlStruct = {
 
 // 3 - locally this will be 3000, on Heroku it will be assigned
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
+
+const handlePost = (request, response, parsedUrl) => {
+  console.log(`${request},${response},${parsedUrl}`);
+  /* if (parsedUrl.pathname === '/add-pic') {
+    request.on('error', (err) => {
+      console.dir(err);
+      response.statusCode = 400;
+      response.end();
+    });
+
+    request.on('data', (chunk) => {
+      body.push(chunk);
+    });
+
+    request.on('end', () => {
+      const bodyString = Buffer.concat(body).toString();
+      const bodyParams = query.parse(bodyString); // turn into an object with .name & .age
+      jsonHandler.addUser(request, response, bodyParams);
+    });
+  } */
+};
 
 // 7 - this is the function that will be called every time a client request comes in
 // this time we will look at the `pathname`, and send back the appropriate page
@@ -28,6 +49,11 @@ const onRequest = (request, response) => {
   const { pathname } = parsedUrl;
   const params = query.parse(parsedUrl.query);
 
+  if (request.method === 'POST') {
+    // handle POST
+    handlePost(request, response, parsedUrl);
+    return; // bail out of function
+  }
   if (pathname.includes('/pics/')) {
     imgHandler.getImgByName(request, response, pathname.split('/pics/')[1]);
   } else if (urlStruct[pathname]) {
