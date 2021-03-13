@@ -1,25 +1,33 @@
 const http = require('http');
 const url = require('url');
 const query = require('querystring');
+const fs = require('fs');
 const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
 const imgHandler = require('./imgResponses.js');
+const imgLib = require('./imageLib.js');
 
 const urlStruct = {
   '/': htmlHandler.getMainClientResponse,
+  '/guess': htmlHandler.getGuessClientResponse,
   '/make': htmlHandler.getMakeClientResponse,
+  '/admin': htmlHandler.getAdminClientResponse,
   '/random-image': jsonHandler.getRandomImageResponse,
   '/random-images': jsonHandler.getRandomImagesResponse,
+  '/all-images': jsonHandler.getAllImagesResponse,
   '/default-styles.css': htmlHandler.getStyles,
+  '/pictionary.jpg': imgHandler.getPictionary,
   notFound: htmlHandler.get404Response,
 };
 
 // 3 - locally this will be 3000, on Heroku it will be assigned
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
+// handles POST requests
+// Inspired by body parse example
 const handlePost = (request, response, parsedUrl) => {
-  console.log(`${request},${response},${parsedUrl}`);
-  /* if (parsedUrl.pathname === '/add-pic') {
+  if (parsedUrl.pathname === '/add-pic') {
+    const body = [];
     request.on('error', (err) => {
       console.dir(err);
       response.statusCode = 400;
@@ -33,9 +41,19 @@ const handlePost = (request, response, parsedUrl) => {
     request.on('end', () => {
       const bodyString = Buffer.concat(body).toString();
       const bodyParams = query.parse(bodyString); // turn into an object with .name & .age
-      jsonHandler.addUser(request, response, bodyParams);
+      // https://stackoverflow.com/questions/10037563/node-js-base64-image-decoding-and-writing-to-file
+      if (bodyParams.image && bodyParams.name) {
+        const imageData = bodyParams.image.replace('data:image/png;base64,', '');
+        fs.writeFileSync(`client/pics/${bodyParams.name}.png`, imageData, { encoding: 'base64' }, () => {});
+        const params = { name: bodyParams.name, url: `client/pics/${bodyParams.name}.png` };
+        const newImage = imgLib.keyExists(params.name);
+        imgLib.addImage(params);
+        jsonHandler.addImageResponse(request, response, true, params, newImage);
+      } else {
+        jsonHandler.addImageResponse(request, response, false);
+      }
     });
-  } */
+  }
 };
 
 // 7 - this is the function that will be called every time a client request comes in

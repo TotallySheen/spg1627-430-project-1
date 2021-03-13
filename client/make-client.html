@@ -46,11 +46,11 @@
 
                 ctx.stroke(); // draw it!
             }
-
+            // clears canvas
             const clear = (e) => {
                 ctx.clearRect(0,0,canvasWidth,canvasHeight);
             }
-
+            // sets up an xhr to save the canvas image to the server
             const saveImage = (e, picForm) => {
                 e.preventDefault();
                 
@@ -63,24 +63,37 @@
                     return;
                 }
                 // uploading the image to the server with the specified name
-                // Credit to https://stackoverflow.com/questions/51347676/xhr-sendparams-multiple-parameters for some ideas for this
                 const canvas = document.querySelector("canvas");
                 const image = canvas.toDataURL("image/png");
-                const params = `imgBase64=${image}&imgName=${name}`;
+                const params = `image=${image}&name=${name}`;
                 const xhr = new XMLHttpRequest();
-                xhr.open("POST", "./upload.php");
+                xhr.open("POST", "/add-pic");
+                xhr.setRequestHeader('Accept','application/json');
                 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 xhr.onload = () => {
-                    console.log("finished upload");
-                    const url = this.responseText;
-                    sendPost(name, url);
+                    handleResponse(xhr);
                 } 
-                console.log("starting upload");
                 xhr.send(params);
             }
-
-            const sendPost = (name, url) => {
-                console.log("do stuff");
+            // handles the status code callback
+            const handleResponse = (xhr) => {
+                const status = document.querySelector("#status"); 
+                switch(xhr.status){
+                case 200:
+                    status.innerHTML = '<b>Success!</b>';
+                    break;
+                case 201:
+                    status.innerHTML = '<b>Created!</b>';
+                    break;
+                case 204:
+                    status.innerHTML = '<b>Updated (No Content)!</b>';
+                    break;
+                case 400:
+                    status.innerHTML = '<b>Bad Request!</b>';
+                    break;
+                default:
+                    status.innerHTML = '<b>Error code not implemented by client</b>';
+                }
             }
 
             const init = () => {
@@ -110,6 +123,12 @@
         <header>
           <h1>Infinite Pictionary</h1>
         </header>
+          <nav>
+            <div><a href="/">HOME</a></div>
+            <div><a href="/guess">GUESS</a></div>
+            <div><a href="/make">MAKE</a></div>
+            <div><a href="/admin">ADMIN</a></div>
+          </nav>
         
         <section>
             <h2>Click to Draw!</h2>
