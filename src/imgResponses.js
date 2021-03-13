@@ -16,4 +16,11 @@ const getImgByName = (request, response, name) => {
   response.end();
 };
 
-module.exports.getImgByName = getImgByName;
+const addImage = (name, url) => {
+  images[name] = url;
+};
+
+module.exports = {
+  getImgByName,
+  addImage,
+};
